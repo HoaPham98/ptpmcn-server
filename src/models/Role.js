@@ -1,0 +1,6 @@
+module.exports = {
+    ROLE_ADMIN: "ROLE_ADMIN",
+    ROLE_CHEF: "ROLE_CHEF",
+    ROLE_WAITER: "ROLE_WAITER",
+    ROLE_CASHIER: "ROLE_CASHIER"
+}
