@@ -4,62 +4,69 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const config = require("../config");
 
-const userSchema = mongoose.Schema({
-    name: {
-        type: String,
-        required: true,
-        trim: true
-    },
-    email: {
-        type: String,
-        required: true,
-        unique: true,
-        lowercase: true,
-        validate: value => {
-            if (!validator.isEmail(value)) {
-                throw new Error({ error: 'Invalid Email address' })
-            }
-        }
-    },
-    password: {
-        type: String,
-        required: true,
-        minLength: 7
-    },
-    dateOfBirth: {
-        type: Date,
-        required: true,
-    },
-    tel: {
-        type: String,
-        trim: true,
-        required: true
-    },
-    salary: {
-        type: String,
-        required: true,
-        trim: true
-    },
-    photoLink: {
-        type: String,
-        trim: true,
-        required: false
-    },
-    tokens: [{
-        token: {
+const userSchema = mongoose.Schema(
+    {
+        name: {
             type: String,
+            required: true,
+            trim: true
+        },
+        email: {
+            type: String,
+            required: true,
+            unique: true,
+            lowercase: true,
+            validate: value => {
+                if (!validator.isEmail(value)) {
+                    throw new Error({ error: 'Invalid Email address' })
+                }
+            }
+        },
+        password: {
+            type: String,
+            required: true,
+            minLength: 7
+        },
+        dateOfBirth: {
+            type: Date,
+            required: true,
+        },
+        tel: {
+            type: String,
+            trim: true,
+            required: true
+        },
+        salary: {
+            type: String,
+            required: true,
+            trim: true
+        },
+        photoLink: {
+            type: String,
+            trim: true,
+            required: false
+        },
+        tokens: [{
+            token: {
+                type: String,
+                required: true
+            }
+        }],
+        area: {
+            type: Schema.Types.ObjectId,
+            ref: "Area",
+            required: true
+        },
+        role: {
+            type: Schema.Types.ObjectId,
+            ref: "Role",
             required: true
         }
-    }],
-    role: {
-        type: String,
-        required: true
     },
-    position: {
-        type: String,
-        required: true
+    {
+        timestamps: true
     }
-})
+)
 
 userSchema.pre('save', async function (next) {
     // Hash the password before saving the user model
