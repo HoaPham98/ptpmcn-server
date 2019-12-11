@@ -11,7 +11,9 @@ const app = express();
 app.use(express.json());
 
 // Routes go here
-app.use("/user", require('./routers/user'));
+app.use("/user", require('./routers/user.route'));
+app.use("/table", require("./routers/table.route"));
+app.use("/area", require("./routers/area.router"));
 
 // Error handler
 app.use(errorHandler);

@@ -6,7 +6,7 @@ async function createUser(userInfo) {
     const currentUser = await User.findOne({ email: userInfo.email });
 
     if (currentUser) {
-        throw new CustomError(errorCode.EMAIL_ALREADY_EXIST, "Could not create new user! Email is already registered!");
+        throw new CustomError(errorCode.ALREADY_EXIST, "Could not create new user! Email is already registered!");
     }
 
     const newUser = await User.create(userInfo);

@@ -5,8 +5,7 @@ const errorCode = {
     NOT_FOUND: 404,
     TOO_MANY_REQUREST: 429,
     INTERNAL_SERVER_ERROR: 500,
-    EMAIL_ALREADY_EXIST: 1,
-    FILE_TOO_LARGE: 2
+    ALREADY_EXIST: 1
 };
 
 module.exports = errorCode;

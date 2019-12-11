@@ -1,5 +1,4 @@
 const router = require('express').Router();
-const User = require('../models/User.model');
 const asyncMiddleware = require("../middlewares/asyncMiddleware");
 const auth = require('../middlewares/auth');
 
@@ -13,8 +12,8 @@ const {
 
 router.post('/register', asyncMiddleware(createUser));
 router.post('/login', asyncMiddleware(logIn));
-router.get('/users/me', auth(), asyncMiddleware(getCurrentUser));
-router.post('/users/me/logout', auth(), asyncMiddleware(logOut))
-router.post('/users/me/logoutall', auth(), asyncMiddleware(logOutAll))
+router.get('/users/me', auth, asyncMiddleware(getCurrentUser));
+router.post('/users/me/logout', auth, asyncMiddleware(logOut))
+router.post('/users/me/logoutall', auth, asyncMiddleware(logOutAll))
 
 module.exports = router;

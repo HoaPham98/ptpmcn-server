@@ -7,11 +7,6 @@ const TableSchema = mongoose.Schema(
             required: true,
             trim: true
         },
-        area: {
-            type: Schema.Types.ObjectId,
-            required: true,
-            ref: "Area"
-        },
         isAvailable: {
             type: Boolean,
             required: true,
