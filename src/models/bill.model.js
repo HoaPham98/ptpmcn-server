@@ -1,21 +1,27 @@
 const mongoose = require("mongoose");
+const Schema = mongoose.Schema
 
 const BillSchema = mongoose.Schema(
     {
         customer: {
             type: Schema.Types.ObjectId,
-            required: true,
+            required: false,
             ref: "Customer"
         },
-        order: {
+        order: [{
             type: Schema.Types.ObjectId,
             required: true,
             ref: "Order"
-        },
+        }],
         totalPrice: {
-            type: double,
+            type: Decimal128,
             required: true
-        }
+        },
+        tables: [{
+            type: Schema.Types.ObjectId,
+            required: true,
+            ref: 'Table'
+        }]
     },
     {
         timestamps: true

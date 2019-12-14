@@ -8,7 +8,7 @@ const {
     updateTable,
     deleteTable,
     getTable
-}
+} = require('../controllers/table.controller')
 
 router.get("/get/:idTable", auth, asyncMiddleware(getTable));
 router.post("/create", auth(role.ROLE_ADMIN), asyncMiddleware(createTable));
