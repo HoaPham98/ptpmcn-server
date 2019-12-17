@@ -16,12 +16,12 @@ async function createOrder(req, res) {
 
 async function getOrder(req, res) {
     const { idOrder } = req.params;
-    const order = await orderService.getOrder(idOrder);
 
     if (!validator.isMongoId(idOrder)) {
-        throw new CustomError(errorCode.BAD_REQUEST, "This is not MongoDB ID");
+        throw new CustomError(errorCode.BAD_REQUEST, "This idOrder is not MongoDB ID");
     }
 
+    const order = await orderService.getOrder(idOrder);
     res.status(201).send({
         status: 1,
         results: order
@@ -32,7 +32,7 @@ async function deleteOrder(req, res) {
     const { idOrder } = req.params;
 
     if (!validator.isMongoId(idOrder)) {
-        throw new CustomError(errorCode.BAD_REQUEST, "This is not MongoDB ID");
+        throw new CustomError(errorCode.BAD_REQUEST, "This idOrder is not MongoDB ID");
     }
 
     const deletedOrder = await orderService.deleteOrder(idOrder);

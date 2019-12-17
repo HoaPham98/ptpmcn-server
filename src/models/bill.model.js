@@ -3,6 +3,11 @@ const Schema = mongoose.Schema
 
 const BillSchema = mongoose.Schema(
     {
+        user: {
+            type: Schema.Types.ObjectId,
+            required: true,
+            ref: "User"
+        },
         customer: {
             type: Schema.Types.ObjectId,
             required: false,
@@ -14,7 +19,7 @@ const BillSchema = mongoose.Schema(
             ref: "Order"
         }],
         totalPrice: {
-            type: Decimal128,
+            type: Schema.Types.Decimal128,
             required: true
         },
         tables: [{

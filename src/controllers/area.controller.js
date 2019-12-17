@@ -16,6 +16,11 @@ async function createArea(req, res) {
 async function updateArea(req, res) {
     const infoArea = req.body;
     const { idArea } = req.params;
+
+    if(!validator.isMongoId(idArea)){
+        throw new CustomError(errorCode.BAD_REQUEST, "This idArea is not MongoDB ID");
+    }
+
     const updatedArea = await areaService.updateArea(idArea, infoArea);
 
     res.status(201).send({
@@ -26,6 +31,11 @@ async function updateArea(req, res) {
 
 async function deleteArea(req, res) {
     const { idArea } = req.params;
+
+    if(!validator.isMongoId(idArea)){
+        throw new CustomError(errorCode.BAD_REQUEST, "This idArea is not MongoDB ID");
+    }
+
     const deletedArea = await areaService.deleteArea(idArea);
 
     res.status(201).send({
@@ -36,6 +46,11 @@ async function deleteArea(req, res) {
 
 async function getArea(req, res) {
     const { idArea } = req.params;
+
+    if(!validator.isMongoId(idArea)){
+        throw new CustomError(errorCode.BAD_REQUEST, "This idArea is not MongoDB ID");
+    }
+
     const area = await areaService.getArea(idArea);
 
     res.status(201).send({

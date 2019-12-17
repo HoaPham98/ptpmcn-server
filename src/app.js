@@ -14,6 +14,7 @@ app.use(express.json());
 app.use("/user", require('./routers/user.route'));
 app.use("/table", require("./routers/table.route"));
 app.use("/area", require("./routers/area.router"));
+app.use("/bill", require("./routers/bill.router"));
 
 // Error handler
 app.use(errorHandler);

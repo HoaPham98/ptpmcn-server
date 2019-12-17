@@ -44,7 +44,7 @@ async function getBillById(idBill) {
     const bill = await Bill.findById(idBill);
 
     if (!bill) {
-        throw new CustomError(errorCode.NOT_FOUND, "Could not find any bills!");
+        throw new CustomError(errorCode.NOT_FOUND, "Could not find any bills to get!");
     }
 
     return bill;
