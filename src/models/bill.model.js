@@ -7,14 +7,24 @@ const BillSchema = mongoose.Schema(
             required: true,
             ref: "Customer"
         },
-        order: {
+        user: {
+            type: Schema.Types.ObjectId,
+            required: true,
+            ref: "Users"
+        },
+        order: [{
             type: Schema.Types.ObjectId,
             required: true,
             ref: "Order"
-        },
+        }],
         totalPrice: {
             type: double,
-            required: true
+            required: true,
+            default: 0
+        },
+        isDeleted: {
+            type: Boolean,
+            default: false
         }
     },
     {

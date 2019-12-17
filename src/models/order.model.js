@@ -30,7 +30,11 @@ const OrderSchema = mongoose.Schema(
             type: Schema.Types.ObjectId,
             required: true,
             ref: "Dish"
-        }]
+        }],
+        isDeleted: {
+            type: Boolean,
+            default: false
+        }
     },
     {
         timestamps: true
