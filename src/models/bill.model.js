@@ -26,7 +26,12 @@ const BillSchema = mongoose.Schema(
             type: Schema.Types.ObjectId,
             required: true,
             ref: 'Table'
-        }]
+        }],
+        isFinished: {
+            type: Boolean,
+            required: true,
+            default: false
+        }
     },
     {
         timestamps: true

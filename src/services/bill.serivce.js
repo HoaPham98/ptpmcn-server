@@ -50,9 +50,23 @@ async function getBillById(idBill) {
     return bill;
 }
 
+async function completeBill(idBill) {
+    const bill = await Bill.findById(idBill);
+
+    if (!bill) {
+        throw new CustomError(errorCode.NOT_FOUND, "Could not find any bills to get!");
+    }
+
+    bill.isFinished = true;
+    await bill.save();
+
+    return bill;
+}
+
 module.exports = {
     createBill,
     updateBill,
     deleteBill,
-    getBillById
+    getBillById,
+    completeBill
 }

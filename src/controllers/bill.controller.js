@@ -61,9 +61,25 @@ async function deleteBill(req, res) {
     });
 }
 
+async function completeBill(req, res) {
+    const { idBill } = req.params;
+
+    if (!validator.isMongoId(idBill)) {
+        throw new CustomError(errorCode.BAD_REQUEST, "This idBill is not MongoDB ID");
+    }
+
+    const completedBill = await billService.completeBill(idBill);
+
+    res.status(201).send({
+        status: 1,
+        results: completedBill
+    })
+}
+
 module.exports = {
     createBill,
     updateBill,
     getBill,
-    deleteBill
+    deleteBill,
+    completeBill
 }
