@@ -16,20 +16,26 @@ const OrderSchema = mongoose.Schema(
             type: Date,
             required: true
         },
-        user: {
+        employee: {
             type: Schema.Types.ObjectId,
             required: true,
             ref: "User"
         },
-        tables: [{
-            type: Schema.Types.ObjectId,
-            required: true,
-            ref: "Table"
-        }],
         dishes: [{
-            type: Schema.Types.ObjectId,
-            required: true,
-            ref: "Dish"
+            dish: {
+                type: Schema.Types.ObjectId,
+                required: true,
+                ref: "Dish"
+            },
+            quantity: {
+                type: Number,
+                required: true
+            },
+            isDone: {
+                type: Boolean,
+                required: true,
+                default: false
+            }
         }],
         isDeleted: {
             type: Boolean,

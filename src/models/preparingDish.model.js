@@ -12,16 +12,24 @@ const PreparingDishSchema = mongoose.Schema(
             ref: "User",
             required: true
         },
-        order: {
+        order: [{
             type: Schema.Types.ObjectId,
-            ref: "Order",
+            ref: "Bill",
             required: true
+        }],
+        quantity: {
+            type: Number
         },
         status: {
             type: String, //pending, preparing, finished
             required: true,
             default: "pending",
             trim: true
+        },
+        startAt: {
+            type: Date,
+            required: true,
+            default: Date.now()
         }
     },
     {

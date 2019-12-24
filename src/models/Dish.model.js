@@ -15,11 +15,16 @@ const dishSchema = mongoose.Schema(
             type: Schema.Types.ObjectId,
             ref: 'DishUnit'
         },
-        availableTime:{
-            type:Schema.Types.Decimal128,
-            required:true,
+        availableTime: {
+            type: Schema.Types.Decimal128,
+            required: true,
             default: 900000 //15 mins
         },
+        isAvailable: {
+            type: Boolean,
+            required: true,
+            default: false
+        }
     },
     {
         timestamps: true
