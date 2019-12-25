@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+require("./dishUnit.model");
 
 const DishSchema = mongoose.Schema(
     {
@@ -12,7 +13,8 @@ const DishSchema = mongoose.Schema(
         },
         unit: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'DishUnit'
+            ref: 'DishUnit',
+            required: true
         },
         availableTime: {
             type: Number,
@@ -27,7 +29,8 @@ const DishSchema = mongoose.Schema(
     },
     {
         timestamps: true
-    })
+    }
+)
 
 const Dish = mongoose.model("Dish", DishSchema, "dishes");
 

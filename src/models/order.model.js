@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+require("../models/dish.model");
 
 const OrderSchema = mongoose.Schema(
     {

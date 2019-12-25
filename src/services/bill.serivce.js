@@ -3,6 +3,7 @@ const CustomError = require("../errors/CustomError");
 const errorCode = require("../errors/errorCode");
 const orderService = require("./order.service");
 const tableService = require("./table.service");
+const preparingDishService = require("../services/preparingDish.service");
 
 
 async function createBill(idUser, infoBill) {
@@ -50,7 +51,7 @@ async function updateBill(idBill, infoBill) {
 }
 
 async function deleteBill(idBill) {
-    const deletedBill = await Bill.findById(idBill);
+    const deletedBill = await Bill.find({ _id: idBill });
 
     if (!deletedBill) {
         throw new CustomError(errorCode.NOT_FOUND, "Could not find any bills to delete!");
@@ -62,7 +63,7 @@ async function deleteBill(idBill) {
 }
 
 async function getBillById(idBill) {
-    const bill = await Bill.findById(idBill);
+    const bill = await Bill.find({ _id: idBill });
 
     if (!bill) {
         throw new CustomError(errorCode.NOT_FOUND, "Could not find any bills to get!");
@@ -72,7 +73,7 @@ async function getBillById(idBill) {
 }
 
 async function completeBill(idBill) {
-    const bill = await Bill.findById(idBill);
+    const bill = await Bill.find({ _id: idBill });
 
     if (!bill) {
         throw new CustomError(errorCode.NOT_FOUND, "Could not find any bills to get!");
@@ -94,6 +95,8 @@ async function addOrder(idBill, orderInfo) {
     bill.orders.push(order._id);
     await bill.save();
 
+    let preparingDish = await preparingDishService.addNewOrder(bill._id, order);
+
     order.isDeleted = undefined;
     order.status = undefined;
     order.closeDate = undefined;
@@ -108,9 +111,11 @@ async function addOrder(idBill, orderInfo) {
 
     await order.populate("employee", "name").execPopulate();
     for (let i = 0; i < order.dishes.length; i++) {
-        await order.populate("dishes." + i + ".dish", 'name').execPopulate();
+        await order.populate("dishes." + i + ".dish", ['name', "unit"]).execPopulate();
+        await order.populate("dishes." + i + ".dish.unit", ["name"]).execPopulate();
     }
-    return { bill, order };
+
+    return { bill, order , preparingDish};
 }
 
 module.exports = {

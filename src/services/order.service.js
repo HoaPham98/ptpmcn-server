@@ -8,7 +8,6 @@ async function createOrder(idUser, infoOrder) {
         employee: idUser,
         ...infoOrder
     }
-
     const newOrder = await Order.create(infoNewOrder);
 
     return newOrder;

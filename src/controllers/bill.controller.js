@@ -83,7 +83,7 @@ async function addOrder(req, res) {
         throw new CustomError(errorCode.BAD_REQUEST, "This idBill is not MongoDB ID");
     }
 
-    const { bill, order } = await billService.addOrder(idBill, orderInfo);
+    const { bill, order , preparingDish} = await billService.addOrder(idBill, orderInfo);
 
     res.status(201).send({
         status: 1,

@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
 const PreparingDishSchema = mongoose.Schema(
     {
@@ -7,18 +8,14 @@ const PreparingDishSchema = mongoose.Schema(
             ref: "Dish",
             required: true
         },
-        chef: {
-            type: Schema.Types.ObjectId,
-            ref: "User",
-            required: true
-        },
-        order: [{
+        bills: [{
             type: Schema.Types.ObjectId,
             ref: "Bill",
             required: true
         }],
         quantity: {
-            type: Number
+            type: Number,
+            required: true
         },
         status: {
             type: String, //pending, preparing, finished
@@ -28,8 +25,7 @@ const PreparingDishSchema = mongoose.Schema(
         },
         startAt: {
             type: Date,
-            required: true,
-            default: Date.now()
+            required: false,
         }
     },
     {
@@ -37,6 +33,6 @@ const PreparingDishSchema = mongoose.Schema(
     }
 )
 
-const PreparingDish = mongoose.model("PreparingDish", PreparingDishSchema);
+const PreparingDish = mongoose.model("PreparingDish", PreparingDishSchema, "preparingDishes");
 
 module.exports = PreparingDish;
