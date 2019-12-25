@@ -3,7 +3,7 @@ const Schema = mongoose.Schema
 
 const BillSchema = mongoose.Schema(
     {
-        user: {
+        employee: {
             type: Schema.Types.ObjectId,
             required: true,
             ref: "User"
@@ -13,14 +13,15 @@ const BillSchema = mongoose.Schema(
             required: false,
             ref: "Customer"
         },
-        order: [{
+        orders: [{
             type: Schema.Types.ObjectId,
             required: true,
             ref: "Order"
         }],
         totalPrice: {
-            type: Schema.Types.Decimal128,
-            required: true
+            type: Number,
+            required: true,
+            default: 0
         },
         tables: [{
             type: Schema.Types.ObjectId,
@@ -37,6 +38,30 @@ const BillSchema = mongoose.Schema(
         timestamps: true
     }
 )
+
+BillSchema.post("save", async (doc) => {
+    await doc.populate("employee", ["_id", "name"]).execPopulate();
+    await doc.populate("tables", ["_id", "name", "isAvailable"]).execPopulate();
+})
+
+BillSchema.post("find", async (docs) => {
+    for (let doc of docs) {
+        for(let i = 0; i < doc.orders.length; i++) {
+            for(let j = 0; j < doc.orders[i].dishes.length; j++){
+                await doc.populate("orders." + i + ".dishes." + j + ".dish", ["name", "unit"], "Dish").execPopulate();
+                await doc.populate("orders." + i + ".dishes." + j + ".dish.unit", ["name"], "DishUnit").execPopulate();
+            }
+        }
+    }
+})
+
+
+BillSchema.pre("find", function (next) {
+    this.populate("employee", ["_id", "name"]);
+    this.populate("tables", ["_id", "name", "isAvailable"]);
+    this.populate("orders", ["status", "openDate", "employee", "dishes"]);
+    next();
+})
 
 const Bill = mongoose.model("Bill", BillSchema);
 

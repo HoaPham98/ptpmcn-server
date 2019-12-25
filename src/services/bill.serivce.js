@@ -1,14 +1,36 @@
 const Bill = require("../models/bill.model");
 const CustomError = require("../errors/CustomError");
 const errorCode = require("../errors/errorCode");
+const orderService = require("./order.service");
+const tableService = require("./table.service");
+const preparingDishService = require("../services/preparingDish.service");
+
 
 async function createBill(idUser, infoBill) {
     const infoNewbill = {
-        user: idUser,
+        employee: idUser,
         ...infoBill
     };
 
-    const newBill = await Bill.create(infoNewbill);
+    const tables = infoBill.tables;
+    let busyTable = "";
+    for (let i = 0; i < tables.length; i++) {
+        tables[i] = await tableService.getTable(tables[i]);
+        if (tables[i].isAvailable === false) {
+            busyTable += tables[i].name;
+            if (i != tables.length - 1)
+                busyTable += ", "
+        }
+    }
+    if (busyTable !== "")
+        throw new CustomError(errorCode.BAD_REQUEST, busyTable + " is not available!");
+    let newBill = await Bill.create(infoNewbill);
+
+    newBill.tables.forEach(table => {
+        table.isAvailable = false;
+        table.save();
+    });
+
     return newBill;
 }
 
@@ -29,7 +51,7 @@ async function updateBill(idBill, infoBill) {
 }
 
 async function deleteBill(idBill) {
-    const deletedBill = await Bill.findById(idBill);
+    const deletedBill = await Bill.find({ _id: idBill });
 
     if (!deletedBill) {
         throw new CustomError(errorCode.NOT_FOUND, "Could not find any bills to delete!");
@@ -41,7 +63,7 @@ async function deleteBill(idBill) {
 }
 
 async function getBillById(idBill) {
-    const bill = await Bill.findById(idBill);
+    const bill = await Bill.find({ _id: idBill });
 
     if (!bill) {
         throw new CustomError(errorCode.NOT_FOUND, "Could not find any bills to get!");
@@ -51,7 +73,7 @@ async function getBillById(idBill) {
 }
 
 async function completeBill(idBill) {
-    const bill = await Bill.findById(idBill);
+    const bill = await Bill.find({ _id: idBill });
 
     if (!bill) {
         throw new CustomError(errorCode.NOT_FOUND, "Could not find any bills to get!");
@@ -63,10 +85,44 @@ async function completeBill(idBill) {
     return bill;
 }
 
+async function addOrder(idBill, orderInfo) {
+    const bill = await Bill.findById(idBill);
+
+    if (!bill)
+        throw new CustomError(errorCode.NOT_FOUND, "Could not find any bills to add order!");
+
+    let order = await orderService.createOrder(bill.employee, orderInfo);
+    bill.orders.push(order._id);
+    await bill.save();
+
+    let preparingDish = await preparingDishService.addNewOrder(bill._id, order);
+
+    order.isDeleted = undefined;
+    order.status = undefined;
+    order.closeDate = undefined;
+    order.createdAt = undefined;
+    order.updatedAt = undefined;
+    order.__v = undefined;
+
+    bill.isFinished = undefined;
+    bill.createdAt = undefined;
+    bill.updatedAt = undefined;
+    bill.__v = undefined;
+
+    await order.populate("employee", "name").execPopulate();
+    for (let i = 0; i < order.dishes.length; i++) {
+        await order.populate("dishes." + i + ".dish", ['name', "unit"]).execPopulate();
+        await order.populate("dishes." + i + ".dish.unit", ["name"]).execPopulate();
+    }
+
+    return { bill, order , preparingDish};
+}
+
 module.exports = {
     createBill,
     updateBill,
     deleteBill,
     getBillById,
-    completeBill
+    completeBill,
+    addOrder
 }

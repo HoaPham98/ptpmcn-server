@@ -1,11 +1,12 @@
 const mongoose = require("mongoose");
+require("../models/dish.model");
 
 const OrderSchema = mongoose.Schema(
     {
         status: {
             type: String, //"open", "closed"
             required: true,
-            default: open
+            default: "open"
         },
         openDate: {
             type: Date,
@@ -14,16 +15,16 @@ const OrderSchema = mongoose.Schema(
         },
         closeDate: {
             type: Date,
-            required: true
+            required: false
         },
         employee: {
-            type: Schema.Types.ObjectId,
+            type: mongoose.Schema.Types.ObjectId,
             required: true,
             ref: "User"
         },
         dishes: [{
             dish: {
-                type: Schema.Types.ObjectId,
+                type: mongoose.Schema.Types.ObjectId,
                 required: true,
                 ref: "Dish"
             },
@@ -39,6 +40,7 @@ const OrderSchema = mongoose.Schema(
         }],
         isDeleted: {
             type: Boolean,
+            required: true,
             default: false
         }
     },

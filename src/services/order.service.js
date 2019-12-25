@@ -4,14 +4,13 @@ const errorCode = require("../errors/errorCode");
 
 async function createOrder(idUser, infoOrder) {
     const infoNewOrder = {
-        openDate: Date.now,
         closeDate: null,
-        users: idUser,
+        employee: idUser,
         ...infoOrder
     }
-
     const newOrder = await Order.create(infoNewOrder);
-    newOrder.populate()
+
+    return newOrder;
 }
 
 async function getOrder(idOrder) {
