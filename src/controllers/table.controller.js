@@ -54,9 +54,19 @@ async function getTable(req, res) {
     })
 }
 
+async function getTables(req, res) {
+    const table = await tableService.getTables();
+
+    res.status(201).send({
+        status: 1,
+        results: table
+    })
+}
+
 module.exports = {
     createTable,
     updateTable,
     deleteTable,
-    getTable
+    getTable,
+    getTables
 }

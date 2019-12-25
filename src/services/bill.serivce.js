@@ -4,6 +4,7 @@ const errorCode = require("../errors/errorCode");
 const orderService = require("./order.service");
 const tableService = require("./table.service");
 const preparingDishService = require("../services/preparingDish.service");
+const mongoose = require('mongoose')
 
 
 async function createBill(idUser, infoBill) {
@@ -28,6 +29,7 @@ async function createBill(idUser, infoBill) {
 
     newBill.tables.forEach(table => {
         table.isAvailable = false;
+        table.currentBill = newBill._id
         table.save();
     });
 
@@ -78,9 +80,21 @@ async function completeBill(idBill) {
     if (!bill) {
         throw new CustomError(errorCode.NOT_FOUND, "Could not find any bills to get!");
     }
+    const session = await mongoose.startSession()
+    try {
+        session.startTransaction()
+        bill.isFinished = true;
+        bill.tables.forEach(async (table) => {
+            table.currentBill = null
+            await table.save()
+        })
+        await bill.save()
 
-    bill.isFinished = true;
-    await bill.save();
+        await session.commitTransaction()
+        session.endSession();
+    } catch (err) {
+        throw new CustomError(errorCode.NOT_FOUND, err.message);
+    }
 
     return bill;
 }

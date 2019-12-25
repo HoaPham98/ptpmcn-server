@@ -22,7 +22,7 @@ async function logIn(email, password) {
         throw new CustomError(errorCode.UNAUTHORIZED, "Login failed! Check authentication credentials");
     }
 
-    const token = user.generateAuthToken();
+    const token = await user.generateAuthToken();
 
     return { token, user };
 }

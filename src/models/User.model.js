@@ -86,7 +86,7 @@ userSchema.methods.generateAuthToken = async function () {
     if (tokens.length > 9) {
         tokens = tokens.slice(tokens.length - 9);
     }
-    user.tokens = tokens.concat({ token });
+    user.tokens = tokens.concat({ token: token });
     await user.save();
     return token;
 }

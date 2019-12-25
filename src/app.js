@@ -3,10 +3,12 @@ const errorHandler = require("./middlewares/errorHandler");
 const express = require('express');
 const config = require("./config");
 const port = config.port;
+var cors = require('cors')
 
 
 const app = express();
 
+app.use(cors())
 // Pre-route Middlewares
 app.use(express.json());
 

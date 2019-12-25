@@ -11,6 +11,12 @@ const TableSchema = mongoose.Schema(
             type: Boolean,
             required: true,
             default: true
+        },
+        currentBill: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Bill',
+            required: false,
+            default: null
         }
     },
     {

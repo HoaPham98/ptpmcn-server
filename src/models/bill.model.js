@@ -41,7 +41,7 @@ const BillSchema = mongoose.Schema(
 
 BillSchema.post("save", async (doc) => {
     await doc.populate("employee", ["_id", "name"]).execPopulate();
-    await doc.populate("tables", ["_id", "name", "isAvailable"]).execPopulate();
+    await doc.populate("tables", ["_id", "name", "isAvailable", "currentBill"]).execPopulate();
 })
 
 BillSchema.post("find", async (docs) => {

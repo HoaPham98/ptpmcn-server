@@ -14,6 +14,7 @@ async function createUser(req, res) {
 }
 
 async function logIn(req, res) {
+    console.log(req.body)
     const { email, password } = req.body;
 
     const { token, user } = await userService.logIn(email, password);
@@ -22,7 +23,7 @@ async function logIn(req, res) {
         status: 1,
         results: {
             token,
-            user
+            role: user.role
         }
     });
 }

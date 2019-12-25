@@ -3,7 +3,7 @@ const CustomError = require("../errors/CustomError");
 const errorCode = require("../errors/errorCode");
 
 async function createTable(infoTable) {
-    const table = Table.findOne({ name: infoTable.name });
+    const table = await Table.findOne({ name: infoTable.name });
 
     if (table) {
         throw new CustomError(errorCode.ALREADY_EXIST, "Table's name has already existed");
@@ -29,7 +29,7 @@ async function updateTable(idTable, infoTable) {
 }
 
 async function deleteTable(idTable) {
-    const deletedTable = Table.findByIdAndDelete(idTable);
+    const deletedTable = await Table.findByIdAndDelete(idTable);
 
     if (!deletedTable) {
         throw new CustomError(errorCode.NOT_FOUND, "Table does not exist!");
@@ -39,7 +39,7 @@ async function deleteTable(idTable) {
 }
 
 async function getTable(idTable) {
-    const table = Table.findById(idTable);
+    const table = await Table.findById(idTable);
 
     if (!table)
         throw new CustomError(errorCode.NOT_FOUND, "Table does not exist!");
@@ -47,10 +47,20 @@ async function getTable(idTable) {
     return table;
 }
 
+async function getTables() {
+    const tables = await Table.find();
+
+    if (!tables)
+        throw new CustomError(errorCode.NOT_FOUND, "Table does not exist!");
+
+    return tables;
+}
+
 
 module.exports = {
     createTable,
     updateTable,
     deleteTable,
-    getTable
+    getTable,
+    getTables
 }
