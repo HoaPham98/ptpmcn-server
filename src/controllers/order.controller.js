@@ -43,8 +43,22 @@ async function deleteOrder(req, res) {
     });
 }
 
+async function finishDish(req, res) {
+    const { idOrder, idDish } = req.query;
+    if (!validator.isMongoId(idOrder)) {
+        throw new CustomError(errorCode.BAD_REQUEST, "This idOrder is not MongoDB ID");
+    }
+
+    const order = await orderService.finishDish(idOrder, idDish);
+    res.status(201).send({
+        status: 1,
+        results: order
+    })
+}
+
 module.exports = {
     createOrder,
     deleteOrder,
-    getOrder
+    getOrder,
+    finishDish
 }

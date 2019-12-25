@@ -13,6 +13,12 @@ const PreparingDishSchema = mongoose.Schema(
             ref: "Bill",
             required: true
         }],
+        orders: [{
+            type: Schema.Types.ObjectId,
+            ref: "Order",
+            required: true
+        }]
+        ,
         quantity: {
             type: Number,
             required: true

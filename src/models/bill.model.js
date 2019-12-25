@@ -55,7 +55,6 @@ BillSchema.post("find", async (docs) => {
     }
 })
 
-
 BillSchema.pre("find", function (next) {
     this.populate("employee", ["_id", "name"]);
     this.populate("tables", ["_id", "name", "isAvailable"]);

@@ -34,8 +34,29 @@ async function deleteOrder(idOrder) {
     return deletedOrder;
 }
 
+async function finishDish(idOrder, idDish) {
+    const order = await Order.findById(idOrder);
+
+    if (!order) {
+        throw new CustomError(errorCode.NOT_FOUND, "Could not found any orders to finish a dish!");
+    }
+
+    if (order.dishes.find(item => item.dish.toString() === idDish.toString()).isDone === true) {
+        throw new CustomError(errorCode.BAD_REQUEST, "This dish is already finished!");
+    }
+
+    if (order.dishes.find(item => item.dish.toString() === idDish.toString()).canFinish === true)
+        order.dishes.find(item => item.dish.toString() === idDish.toString()).isDone = true;
+    else
+        throw new CustomError(errorCode.BAD_REQUEST, "This dish is still being prepared!");
+
+    await order.save();
+    return order;
+}
+
 module.exports = {
     createOrder,
     getOrder,
-    deleteOrder
+    deleteOrder,
+    finishDish
 }

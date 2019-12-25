@@ -10,7 +10,7 @@ const {
     getBill,
     deleteBill,
     completeBill,
-    addOrder
+    addOrder,
 } = require("../controllers/bill.controller");
 
 router.get("/get/:idBill", auth([role.ROLE_ADMIN, role.ROLE_WAITER]), asyncMiddleware(getBill));

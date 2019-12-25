@@ -115,7 +115,7 @@ async function addOrder(idBill, orderInfo) {
         await order.populate("dishes." + i + ".dish.unit", ["name"]).execPopulate();
     }
 
-    return { bill, order , preparingDish};
+    return { bill, order, preparingDish };
 }
 
 module.exports = {
@@ -124,5 +124,5 @@ module.exports = {
     deleteBill,
     getBillById,
     completeBill,
-    addOrder
+    addOrder,
 }

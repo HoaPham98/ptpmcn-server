@@ -41,6 +41,8 @@ async function addNewOrder(idBill, order) {
         listDishesCanBeInstanlyAdded[i].quantity += addedDish.quantity;
         if (!listDishesCanBeInstanlyAdded[i].bills.includes(idBill))
             listDishesCanBeInstanlyAdded[i].bills.push(idBill);
+        if (!listDishesCanBeInstanlyAdded[i].orders.includes(order._id))
+            listDishesCanBeInstanlyAdded[i].orders.push(order._id);
 
         await listDishesCanBeInstanlyAdded[i].save();
         newPreparingList.push(listDishesCanBeInstanlyAdded[i]);
@@ -60,6 +62,7 @@ async function addNewOrder(idBill, order) {
             "dish": newPerparingDishes[i].idDish,
             "quantity": newPerparingDishes[i].quantity,
             "bills": [idBill],
+            "orders": [order._id],
             "status": "pending"
         });
         newPreparingList.push(temp);
@@ -78,7 +81,7 @@ async function createPreparingDish(preparingDishInfo) {
 async function startPreparingDish(idPreparingDish) {
     let dish = await PreparingDish.findById(idPreparingDish);
 
-    if(dish.status === "preparing" || dish.status === "finished")
+    if (dish.status === "preparing" || dish.status === "finished")
         throw new CustomError(errorCode.BAD_REQUEST, "Could not start! This dish is " + dish.status + "!");
     dish.startAt = Date.now();
     dish.status = "preparing";
@@ -87,14 +90,18 @@ async function startPreparingDish(idPreparingDish) {
 }
 
 async function finishPreparingDish(idPreparingDish) {
-    let dish = await PreparingDish.find(idPreparingDish);
+    let preparingDish = await PreparingDish.findById(idPreparingDish);
 
-    if(dish.status === "finished")
-        throw new CustomError(errorCode.BAD_REQUEST, "Could not finish! This dish is " + dish.status + "!");
-
-    dish.status = "finished";
-    await dish.save();
-    return dish;
+    if (preparingDish.status === "finished" || preparingDish.status === "pending")
+        throw new CustomError(errorCode.BAD_REQUEST, "Could not finish! This dish is " + preparingDish.status + "!");
+    await preparingDish.populate("orders","dishes").execPopulate();
+    for(let i = 0; i < preparingDish.orders.length; i++){
+        preparingDish.orders[i].dishes.find(item => item.dish.toString() === preparingDish.dish.toString()).canFinish = true;
+        await preparingDish.orders[i].save();
+    }
+    preparingDish.status = "finished";
+    await preparingDish.save();
+    return preparingDish;
 }
 
 module.exports = {

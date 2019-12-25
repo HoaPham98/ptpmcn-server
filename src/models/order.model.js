@@ -32,6 +32,11 @@ const OrderSchema = mongoose.Schema(
                 type: Number,
                 required: true
             },
+            canFinish:{
+                type: Boolean,
+                required: true,
+                default: false
+            },
             isDone: {
                 type: Boolean,
                 required: true,
