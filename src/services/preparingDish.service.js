@@ -36,7 +36,7 @@ async function addNewOrder(idBill, order) {
     for (let i = 0; i < listDishesCanBeInstanlyAdded.length; i++) {
 
         let addedDish = dishesInNewOrder.find(item => item.idDish.toString() === listDishesCanBeInstanlyAdded[i].dish._id.toString());
-        
+
         listDishesCanBeInstanlyAdded[i].quantity += addedDish.quantity;
         if (!listDishesCanBeInstanlyAdded[i].bills.includes(idBill))
             listDishesCanBeInstanlyAdded[i].bills.push(idBill);
@@ -74,6 +74,25 @@ async function createPreparingDish(preparingDishInfo) {
     return dish;
 }
 
+async function startPreparingDish(idPreparingDish) {
+    const dish = await PreparingDish.find({ "_id": idPreparingDish });
+
+    dish.startAt = Date.now();
+    dish.status = "preparing";
+    await dish.save();
+    return dish;
+}
+
+async function finishPreparingDish(idPreparingDish) {
+    const dish = await PreparingDish.find({ "_id": idPreparingDish });
+
+    dish.status = "finished";
+    await dish.save();
+    return dish;
+}
+
 module.exports = {
-    addNewOrder
+    addNewOrder,
+    startPreparingDish,
+    finishPreparingDish
 }
