@@ -1,5 +1,6 @@
 const PreparingDish = require("../models/preparingDish.model");
-const Dish = require("../models/dish.model");
+const CustomError = require("../errors/CustomError");
+const errorCode = require("../errors/errorCode");
 
 async function addNewOrder(idBill, order) {
     let newPreparingList = [];
@@ -68,15 +69,17 @@ async function addNewOrder(idBill, order) {
 
 
 async function createPreparingDish(preparingDishInfo) {
-    const dish = await PreparingDish.create({
+    let dish = await PreparingDish.create({
         ...preparingDishInfo
     });
     return dish;
 }
 
 async function startPreparingDish(idPreparingDish) {
-    const dish = await PreparingDish.find({ "_id": idPreparingDish });
+    let dish = await PreparingDish.findById(idPreparingDish);
 
+    if(dish.status === "preparing" || dish.status === "finished")
+        throw new CustomError(errorCode.BAD_REQUEST, "Could not start! This dish is " + dish.status + "!");
     dish.startAt = Date.now();
     dish.status = "preparing";
     await dish.save();
@@ -84,7 +87,10 @@ async function startPreparingDish(idPreparingDish) {
 }
 
 async function finishPreparingDish(idPreparingDish) {
-    const dish = await PreparingDish.find({ "_id": idPreparingDish });
+    let dish = await PreparingDish.find(idPreparingDish);
+
+    if(dish.status === "finished")
+        throw new CustomError(errorCode.BAD_REQUEST, "Could not finish! This dish is " + dish.status + "!");
 
     dish.status = "finished";
     await dish.save();
