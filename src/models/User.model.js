@@ -56,11 +56,10 @@ const userSchema = mongoose.Schema(
         area: {
             type: Schema.Types.ObjectId,
             ref: "Area",
-            required: true
+            required: false
         },
         role: {
-            type: Schema.Types.ObjectId,
-            ref: "Role",
+            type: String,
             required: true
         }
     },

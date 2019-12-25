@@ -47,6 +47,7 @@ async function getTable(idTable) {
     return table;
 }
 
+
 module.exports = {
     createTable,
     updateTable,

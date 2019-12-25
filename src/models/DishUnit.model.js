@@ -12,6 +12,6 @@ const dishUnitSchema = mongoose.Schema(
     }
 )
 
-const DishUnit = mongoose.model('DishUnit', userSchema)
+const DishUnit = mongoose.model('DishUnit', dishUnitSchema, "dishUnit");
 
 module.exports = DishUnit

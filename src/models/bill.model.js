@@ -3,7 +3,7 @@ const Schema = mongoose.Schema
 
 const BillSchema = mongoose.Schema(
     {
-        user: {
+        employee: {
             type: Schema.Types.ObjectId,
             required: true,
             ref: "User"
@@ -13,14 +13,15 @@ const BillSchema = mongoose.Schema(
             required: false,
             ref: "Customer"
         },
-        order: [{
+        orders: [{
             type: Schema.Types.ObjectId,
             required: true,
             ref: "Order"
         }],
         totalPrice: {
-            type: Schema.Types.Decimal128,
-            required: true
+            type: Number,
+            required: true,
+            default: 0
         },
         tables: [{
             type: Schema.Types.ObjectId,
@@ -37,6 +38,12 @@ const BillSchema = mongoose.Schema(
         timestamps: true
     }
 )
+
+BillSchema.post("save", async (doc) => {
+    // await doc.populate("orders", ["status", "openDate", "employee", "dishes"]).execPopulate();
+    await doc.populate("employee", ["_id", "name"]).execPopulate();
+    await doc.populate("tables", ["_id", "name", "isAvailable"]).execPopulate();
+})
 
 const Bill = mongoose.model("Bill", BillSchema);
 

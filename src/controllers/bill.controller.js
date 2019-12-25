@@ -1,5 +1,4 @@
 const billService = require("../services/bill.serivce");
-const Bill = require("../models/bill.model");
 const validator = require("validator");
 const CustomError = require("../errors/CustomError");
 const errorCode = require("../errors/errorCode");
@@ -76,10 +75,30 @@ async function completeBill(req, res) {
     })
 }
 
+async function addOrder(req, res) {
+    const { idBill } = req.params;
+    const orderInfo = req.body;
+
+    if (!validator.isMongoId(idBill)) {
+        throw new CustomError(errorCode.BAD_REQUEST, "This idBill is not MongoDB ID");
+    }
+
+    const { bill, order } = await billService.addOrder(idBill, orderInfo);
+
+    res.status(201).send({
+        status: 1,
+        results: {
+            order,
+            bill
+        }
+    })
+}
+
 module.exports = {
     createBill,
     updateBill,
     getBill,
     deleteBill,
-    completeBill
+    completeBill,
+    addOrder
 }
