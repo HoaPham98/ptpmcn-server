@@ -5,6 +5,7 @@ const orderService = require("./order.service");
 const tableService = require("./table.service");
 const preparingDishService = require("../services/preparingDish.service");
 const Dish = require("../models/dish.model");
+const Table = require('../models/table.model')
 const mongoose = require('mongoose')
 
 
@@ -140,9 +141,17 @@ async function createFinalOrder(idBill) {
         throw new CustomError(errorCode.NOT_FOUND, "Could not find any bills to get final order!");
 
     await bill.populate("orders", "dishes").execPopulate();
+
     for (let i = 0; i < bill.orders.length; i++) {
         for (let j = 0; j < bill.orders[i].dishes.length; j++)
             await bill.populate("orders." + i + ".dishes." + j + ".dish", ["name", "isAvailable"], "Dish").execPopulate();
+    }
+
+    if (bill.finalOrder != null && bill.finalOrder.length > 0) {
+        for (let i=0; i< bill.finalOrder.length; i++) {
+            await bill.populate('finalOrder.' + i + ".dish", ["name", "isAvailable"], "Dish").execPopulate();
+        }
+        return bill
     }
 
     let finalOrder = [];
@@ -204,13 +213,28 @@ async function checkOut(idBill) {
         let dishPrice = dishes.find(item2 => item.dish._id.toString() === item2._id.toString()).price;
         totalPrice += dishPrice * item.quantity;
     });
-    bill.totalPrice = totalPrice;
-    await bill.save();
+    const session = await mongoose.startSession()
+    try {
+        session.startTransaction()
+
+        bill.totalPrice = totalPrice;
+        bill.isFinished = true;
+        bill.tables.forEach(async (table) => {
+            const _table = await Table.findById(table._id)
+            _table.isAvailable = true
+            _table.currentBill = null
+            await _table.save()
+        })
+        await bill.save()
+
+        await session.commitTransaction()
+        session.endSession();
+    } catch (err) {
+        throw new CustomError(errorCode.NOT_FOUND, err.message);
+    }
 
     //TODO: Noti thu ngan
-
-
-
+    require('../controllers/io.controller').io().of('/cashier').emit('done', 'Có yêu cầu thanh toán mới')
 
     return bill;
 }

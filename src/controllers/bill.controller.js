@@ -125,7 +125,7 @@ async function returnDish(req, res) {
 
 async function checkOut(req, res) {
     const { idBill } = req.params;
-    const bill = await billService.calculateBill(idBill);
+    const bill = await billService.checkOut(idBill);
 
     res.status(201).send({
         status: 1,
