@@ -19,10 +19,16 @@ app.use("/area", require("./routers/area.router"));
 app.use("/bill", require("./routers/bill.router"));
 app.use("/preparingDish", require("./routers/preparingDish.route"));
 app.use("/order", require("./routers/order.router"));
+app.use('/dish', require('./routers/dish.router'));
+
+app.use('/test', require('./routers/test.router'))
 
 // Error handler
 app.use(errorHandler);
 
-app.listen(port, () => {
+var server = require("http").Server(app);
+var io = require('./controllers/io.controller').initialize(server);
+
+server.listen(port, () => {
     console.log(`Server running on port ${port}`);
 })

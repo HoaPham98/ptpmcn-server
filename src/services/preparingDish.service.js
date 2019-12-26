@@ -104,8 +104,15 @@ async function finishPreparingDish(idPreparingDish) {
     return preparingDish;
 }
 
+async function getListPreparing() {
+    let list = await PreparingDish.find({status: { $ne: "finished"}})
+
+    return list
+}
+
 module.exports = {
     addNewOrder,
     startPreparingDish,
-    finishPreparingDish
+    finishPreparingDish,
+    getListPreparing
 }

@@ -85,6 +85,8 @@ async function addOrder(req, res) {
 
     const { bill, order, preparingDish } = await billService.addOrder(idBill, orderInfo);
 
+    require('../controllers/io.controller').io().of('/chef').emit('onChange', "Có thêm order mới")
+
     res.status(201).send({
         status: 1,
         results: {
