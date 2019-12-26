@@ -72,9 +72,16 @@ async function getBillById(idBill) {
     if (bill.length <= 0) {
         throw new CustomError(errorCode.NOT_FOUND, "Could not find any bills to get!");
     }
+    // bill[0].orders = undefined;
+    // bill[0].employee = undefined;
+    // bill[0].createdAt = undefined;
+    // bill[0].updatedAt = undefined;
+    // bill[0].__v = undefined;
 
     return bill[0];
 }
+
+
 
 async function completeBill(idBill) {
     const bills = await Bill.find({ _id: idBill });
@@ -241,6 +248,20 @@ async function checkOut(idBill) {
     return bill;
 }
 
+async function getLastestPendingBill() {
+    const bills = await Bill.find({
+        "status": "pending"
+    }).limit(10).sort({ updatedAt: 1 });
+    bills.forEach(bill => {
+        bill.orders = undefined;
+        bill.employee = undefined;
+        bill.createdAt = undefined;
+        bill.updatedAt = undefined;
+        bill.__v = undefined;
+    });
+    return bills;
+}
+
 
 module.exports = {
     createBill,
@@ -251,5 +272,6 @@ module.exports = {
     addOrder,
     createFinalOrder,
     returnDish,
-    checkOut
+    checkOut,
+    getLastestPendingBill
 }

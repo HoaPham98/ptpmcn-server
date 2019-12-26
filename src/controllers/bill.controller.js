@@ -134,6 +134,15 @@ async function checkOut(req, res) {
     })
 }
 
+async function getLastestPendingBill(req, res) {
+    const bills = await billService.getLastestPendingBill();
+
+    res.status(201).send({
+        status: 1,
+        results: bills
+    });
+}
+
 module.exports = {
     createBill,
     updateBill,
@@ -143,5 +152,6 @@ module.exports = {
     addOrder,
     createFinalOrder,
     returnDish,
-    checkOut
+    checkOut,
+    getLastestPendingBill
 }
