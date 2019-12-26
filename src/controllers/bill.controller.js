@@ -133,6 +133,26 @@ async function checkOut(req, res) {
     })
 }
 
+async function finishBill(req, res) {
+    const { idBill } = req.params;
+    const { idCustomer } = req.body;
+
+    if (!validator.isMongoId(idBill)) {
+        throw new CustomError(errorCode.BAD_REQUEST, "This idBill is not MongoDB ID");
+    }
+
+    if (!validator.isMongoId(idCustomer)) {
+        throw new CustomError(errorCode.BAD_REQUEST, "This idCustomer is not MongoDB ID");
+    }
+
+    const bill = await billService.finishBill(idBill, idCustomer);
+
+    res.status(201).send({
+        status: 1,
+        results: bill
+    })
+}
+
 module.exports = {
     createBill,
     updateBill,
@@ -142,5 +162,6 @@ module.exports = {
     addOrder,
     createFinalOrder,
     returnDish,
-    checkOut
+    checkOut,
+    finishBill
 }

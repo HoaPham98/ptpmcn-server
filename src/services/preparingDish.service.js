@@ -137,7 +137,6 @@ async function finishPreparingDish(idPreparingDish) {
 
 async function getListPreparing() {
     let list = await PreparingDish.find({ status: { $ne: "finished" } })
-
     return list
 }
 

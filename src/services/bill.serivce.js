@@ -68,7 +68,7 @@ async function deleteBill(idBill) {
 async function getBillById(idBill) {
     const bill = await Bill.find({ _id: idBill });
 
-    if (!bill || bill.length < 1) {
+    if (bill.length <= 0) {
         throw new CustomError(errorCode.NOT_FOUND, "Could not find any bills to get!");
     }
 
@@ -215,6 +215,24 @@ async function checkOut(idBill) {
     return bill;
 }
 
+async function finishBill(idBill, idCustomer) {
+    let bill = await Bill.findOne({
+        "_id": idBill,
+        "isFinished": false
+    });
+
+    if (bill.length <= 0) {
+        throw new CustomError(errorCode.NOT_FOUND, "Could not find bill to finish!");
+    }
+
+    bill.customer = idCustomer;
+    bill.isFinished = true;
+
+    await bill.save();
+    return bill;
+    
+}
+
 module.exports = {
     createBill,
     updateBill,
@@ -224,5 +242,6 @@ module.exports = {
     addOrder,
     createFinalOrder,
     returnDish,
-    checkOut
+    checkOut,
+    finishBill
 }

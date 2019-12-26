@@ -28,7 +28,7 @@ async function findCustomerByTel(tel) {
 }
 
 async function updateCustomer(tel, infoCustomer) {
-    const customer = await Customer.findOne({
+    let customer = await Customer.findOne({
         "tel": tel
     });
 
