@@ -194,11 +194,11 @@ async function checkOut(idBill) {
     const idDishes = finalOrder.map(item => item.dish._id);
 
     const dishes = await Dish.find({
-        "_id":{
+        "_id": {
             $in: idDishes
         }
     });
-    
+
     let totalPrice = 0;
     finalOrder.forEach(item => {
         let dishPrice = dishes.find(item2 => item.dish._id.toString() === item2._id.toString()).price;
@@ -211,12 +211,8 @@ async function checkOut(idBill) {
 
 
 
-    
+
     return bill;
-}
-
-async function getTableAndDishWhenFinish(idBill, idDish, idOrder) {
-
 }
 
 module.exports = {

@@ -1,4 +1,7 @@
 const PreparingDish = require("../models/preparingDish.model");
+const Bill = require("../models/bill.model");
+const Order = require("../models/order.model");
+const Dish = require("../models/dish.model");
 const CustomError = require("../errors/CustomError");
 const errorCode = require("../errors/errorCode");
 
@@ -101,11 +104,39 @@ async function finishPreparingDish(idPreparingDish) {
     }
     preparingDish.status = "finished";
     await preparingDish.save();
+
+    let nameDish = await Dish.findById(preparingDish.dish);
+    nameDish = nameDish.name;
+    let message = "Món \"" + nameDish + "\" cho ";
+    const idBills = preparingDish.bills;
+    const bills = await Bill.find({
+        "_id": {
+            $in: idBills
+        }
+    }).populate("tables");
+
+    for (let j = 0; j < bills.length; j++) {
+        for (let i = 0; i < bills[j].tables.length; i++) {
+            message += bills[j].tables[i].name;
+            if (i < bills[j].tables.length - 1) {
+                message += ", ";
+            }
+        }
+        if (j < bills.length - 1) {
+            message += ", ";
+        }
+        else
+            message += " ";
+    }
+    message += "đã xong!";
+
+    // TODO: THAY HELLO CON DÊ BẰNG MESSAGE CẦN HIỆN
+    require('../controllers/io.controller').io().of('/waiter').emit('done', message)
     return preparingDish;
 }
 
 async function getListPreparing() {
-    let list = await PreparingDish.find({status: { $ne: "finished"}})
+    let list = await PreparingDish.find({ status: { $ne: "finished" } })
 
     return list
 }
