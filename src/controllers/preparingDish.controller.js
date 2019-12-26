@@ -24,7 +24,17 @@ async function finishPreparingDish(req, res) {
     });
 }
 
+async function getPreparingDish(req, res) {
+    const dishes = await preparingDishService.getListPreparing();
+
+    res.status(201).send({
+        status: 1,
+        results: dishes
+    })
+}
+
 module.exports = {
     startPreparingDish,
-    finishPreparingDish
+    finishPreparingDish,
+    getPreparingDish
 }
