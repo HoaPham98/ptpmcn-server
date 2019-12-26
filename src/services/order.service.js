@@ -1,12 +1,25 @@
 const Order = require("../models/order.model");
 const CustomError = require("../errors/CustomError");
 const errorCode = require("../errors/errorCode");
+const Dish = require("../models/dish.model");
 
 async function createOrder(idUser, infoOrder) {
+
     const infoNewOrder = {
         closeDate: null,
         employee: idUser,
         ...infoOrder
+    }
+    const idDishes = infoNewOrder.dishes.map(item => item.dish);
+    const dishes = await Dish.find({
+        "_id": {
+            $in: idDishes
+        }
+    });
+
+    for (let i = 0; i < infoNewOrder.dishes.length; i++) {
+        const dish = dishes.find(item => item._id.toString() === infoNewOrder.dishes[i].dish.toString());
+        infoNewOrder.dishes[i].canFinish = dish.isAvailable;
     }
     const newOrder = await Order.create(infoNewOrder);
 

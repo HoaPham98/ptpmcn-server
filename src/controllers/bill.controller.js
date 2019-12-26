@@ -94,6 +94,20 @@ async function addOrder(req, res) {
     })
 }
 
+async function createFinalOrder(req, res) {
+    const { idBill } = req.params;
+
+    const bill = await billService.createFinalOrder(idBill);
+    const finalOrder = bill.finalOrder;
+    bill.finalOrder = undefined;
+    res.status(201).send({
+        status: 1,
+        results: {
+            finalOrder,
+            bill
+        }
+    })
+}
 
 module.exports = {
     createBill,
@@ -102,4 +116,5 @@ module.exports = {
     deleteBill,
     completeBill,
     addOrder,
+    createFinalOrder
 }

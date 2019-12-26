@@ -5,7 +5,7 @@ const errorCode = require("../errors/errorCode");
 async function addNewOrder(idBill, order) {
     let newPreparingList = [];
     // Danh sach cac mon an trong order dang can phai them
-    let dishesInNewOrder = order.dishes.map(item => {
+    let dishesInNewOrder = order.dishes.filter(item => item.canFinish === false).map(item => {
         return {
             "idDish": item.dish,
             "quantity": item.quantity
@@ -94,8 +94,8 @@ async function finishPreparingDish(idPreparingDish) {
 
     if (preparingDish.status === "finished" || preparingDish.status === "pending")
         throw new CustomError(errorCode.BAD_REQUEST, "Could not finish! This dish is " + preparingDish.status + "!");
-    await preparingDish.populate("orders","dishes").execPopulate();
-    for(let i = 0; i < preparingDish.orders.length; i++){
+    await preparingDish.populate("orders", "dishes").execPopulate();
+    for (let i = 0; i < preparingDish.orders.length; i++) {
         preparingDish.orders[i].dishes.find(item => item.dish.toString() === preparingDish.dish.toString()).canFinish = true;
         await preparingDish.orders[i].save();
     }

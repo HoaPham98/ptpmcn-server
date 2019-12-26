@@ -132,6 +132,41 @@ async function addOrder(idBill, orderInfo) {
     return { bill, order, preparingDish };
 }
 
+async function createFinalOrder(idBill) {
+    const bill = await Bill.findById(idBill);
+
+    if (!bill)
+        throw new CustomError(errorCode.NOT_FOUND, "Could not find any bills to get final order!");
+
+    await bill.populate("orders", "dishes").execPopulate();
+    for (let i = 0; i < bill.orders.length; i++) {
+        for (let j = 0; j < bill.orders[i].dishes.length; j++)
+            await bill.populate("orders." + i + ".dishes." + j + ".dish", ["name", "isAvailable"], "Dish").execPopulate();
+    }
+
+    let finalOrder = [];
+    bill.orders.forEach(order => {
+        order.dishes.forEach(dish => {
+            let index = finalOrder.findIndex(item => item.idDish.toString() === dish.dish._id.toString());
+            if (index === -1) {
+                finalOrder.push({
+                    "idDish": dish.dish._id,
+                    "quantity": dish.quantity,
+                    "isAvailable": dish.dish.isAvailable
+                });
+            }
+            else {
+                finalOrder[index].quantity += dish.quantity;
+            }
+        })
+    });
+
+    bill.finalOrder = finalOrder;
+    await bill.save();
+    bill.orders = undefined;
+    return bill;
+}
+
 module.exports = {
     createBill,
     updateBill,
@@ -139,4 +174,5 @@ module.exports = {
     getBillById,
     completeBill,
     addOrder,
+    createFinalOrder
 }

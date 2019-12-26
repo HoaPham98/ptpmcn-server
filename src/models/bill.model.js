@@ -32,7 +32,22 @@ const BillSchema = mongoose.Schema(
             type: Boolean,
             required: true,
             default: false
-        }
+        },
+        finalOrder: [{
+            idDish: {
+                type: Schema.Types.ObjectId,
+                required: true
+            },
+            quantity: {
+                type: Number,
+                required: true
+            },
+            isAvailable: {
+                type: Boolean,
+                required: true,
+                default:false
+            }
+        }]
     },
     {
         timestamps: true
@@ -46,8 +61,8 @@ BillSchema.post("save", async (doc) => {
 
 BillSchema.post("find", async (docs) => {
     for (let doc of docs) {
-        for(let i = 0; i < doc.orders.length; i++) {
-            for(let j = 0; j < doc.orders[i].dishes.length; j++){
+        for (let i = 0; i < doc.orders.length; i++) {
+            for (let j = 0; j < doc.orders[i].dishes.length; j++) {
                 await doc.populate("orders." + i + ".dishes." + j + ".dish", ["name", "unit"], "Dish").execPopulate();
                 await doc.populate("orders." + i + ".dishes." + j + ".dish.unit", ["name"], "DishUnit").execPopulate();
             }
