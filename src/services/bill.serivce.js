@@ -76,21 +76,29 @@ async function getBillById(idBill) {
 }
 
 async function completeBill(idBill) {
-    const bill = await Bill.find({ _id: idBill });
+    let bills = await Bill.find({
+        "_id":idBill,
+        "status":"checkingOut"
+    });
 
-    if (!bill) {
+    if (bills.length <= 0) {
         throw new CustomError(errorCode.NOT_FOUND, "Could not find any bills to get!");
     }
+
+    const bill = bills[0];
+
     const session = await mongoose.startSession()
     try {
-        session.startTransaction()
-        bill.isFinished = true;
-        bill.tables.forEach(async (table) => {
-            table.currentBill = null
-            await table.save()
-        })
+        session.startTransaction();
+        bill.status = "finished";
+        
+        for(let i = 0; i < bill.tables.length; i++){
+            console.log(bill);
+            bill.tables[i].currentBill = null;
+            await bill.tables[i].save();
+        }
         await bill.save()
-
+        
         await session.commitTransaction()
         session.endSession();
     } catch (err) {
@@ -160,7 +168,6 @@ async function createFinalOrder(idBill) {
             }
         })
     });
-
     bill.finalOrder = finalOrder;
     await bill.save();
     bill.orders = undefined;
@@ -185,11 +192,15 @@ async function returnDish(idBill, dish) {
 }
 
 async function checkOut(idBill) {
-    let bill = await Bill.findById(idBill);
+    let bill = await Bill.findOne({
+        "_id":idBill,
+        "status":"eating"
+    });
 
     if (!bill)
         throw new CustomError(errorCode.NOT_FOUND, "Could not find any bills to return dish!");
 
+    bill.status = "checkingOut"
     const finalOrder = bill.finalOrder;
     const idDishes = finalOrder.map(item => item.dish._id);
 
@@ -206,32 +217,26 @@ async function checkOut(idBill) {
     });
     bill.totalPrice = totalPrice;
     await bill.save();
-
-    //TODO: Noti thu ngan
-
-
-
-
     return bill;
 }
 
-async function finishBill(idBill, idCustomer) {
-    let bill = await Bill.findOne({
-        "_id": idBill,
-        "isFinished": false
-    });
+// async function finishBill(idBill, idCustomer) {
+//     let bill = await Bill.findOne({
+//         "_id": idBill,
+//         "isFinished": false
+//     });
 
-    if (bill.length <= 0) {
-        throw new CustomError(errorCode.NOT_FOUND, "Could not find bill to finish!");
-    }
+//     if (bill.length <= 0) {
+//         throw new CustomError(errorCode.NOT_FOUND, "Could not find bill to finish!");
+//     }
 
-    bill.customer = idCustomer;
-    bill.isFinished = true;
+//     bill.customer = idCustomer;
+//     bill.isFinished = true;
 
-    await bill.save();
-    return bill;
-    
-}
+//     await bill.save();
+//     return bill;
+
+// }
 
 module.exports = {
     createBill,
@@ -242,6 +247,5 @@ module.exports = {
     addOrder,
     createFinalOrder,
     returnDish,
-    checkOut,
-    finishBill
+    checkOut
 }

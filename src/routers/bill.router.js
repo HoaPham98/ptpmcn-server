@@ -12,8 +12,7 @@ const {
     addOrder,
     createFinalOrder,
     returnDish,
-    checkOut,
-    finishBill
+    checkOut
 } = require("../controllers/bill.controller");
 
 router.get("/get/:idBill", auth([role.ROLE_ADMIN, role.ROLE_WAITER]), asyncMiddleware(getBill));
@@ -25,6 +24,5 @@ router.post("/addOrder/:idBill", auth([role.ROLE_WAITER]), asyncMiddleware(addOr
 router.get("/createFinalOrder/:idBill", auth([role.ROLE_WAITER]), asyncMiddleware(createFinalOrder));
 router.patch("/returnDish/:idBill", auth([role.ROLE_WAITER]), asyncMiddleware(returnDish));
 router.patch("/checkOut/:idBill", auth([role.ROLE_WAITER]), asyncMiddleware(checkOut));
-router.patch("/finish/:idBill",auth([role.ROLE_CASHIER]), asyncMiddleware(finishBill));
 
 module.exports = router;

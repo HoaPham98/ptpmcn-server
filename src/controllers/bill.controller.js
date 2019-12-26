@@ -62,12 +62,13 @@ async function deleteBill(req, res) {
 
 async function completeBill(req, res) {
     const { idBill } = req.params;
+    const { idCustomer } = req.body;
 
     if (!validator.isMongoId(idBill)) {
         throw new CustomError(errorCode.BAD_REQUEST, "This idBill is not MongoDB ID");
     }
 
-    const completedBill = await billService.completeBill(idBill);
+    const completedBill = await billService.completeBill(idBill, idCustomer);
 
     res.status(201).send({
         status: 1,
@@ -125,27 +126,7 @@ async function returnDish(req, res) {
 
 async function checkOut(req, res) {
     const { idBill } = req.params;
-    const bill = await billService.calculateBill(idBill);
-
-    res.status(201).send({
-        status: 1,
-        results: bill
-    })
-}
-
-async function finishBill(req, res) {
-    const { idBill } = req.params;
-    const { idCustomer } = req.body;
-
-    if (!validator.isMongoId(idBill)) {
-        throw new CustomError(errorCode.BAD_REQUEST, "This idBill is not MongoDB ID");
-    }
-
-    if (!validator.isMongoId(idCustomer)) {
-        throw new CustomError(errorCode.BAD_REQUEST, "This idCustomer is not MongoDB ID");
-    }
-
-    const bill = await billService.finishBill(idBill, idCustomer);
+    const bill = await billService.checkOut(idBill);
 
     res.status(201).send({
         status: 1,

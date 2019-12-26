@@ -28,10 +28,10 @@ const BillSchema = mongoose.Schema(
             required: true,
             ref: 'Table'
         }],
-        isFinished: {
-            type: Boolean,
+        status: {
+            type: String, // eating, checkingOut, finished
             required: true,
-            default: false
+            default: "eating"
         },
         finalOrder: [{
             dish: {
