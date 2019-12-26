@@ -34,18 +34,14 @@ const BillSchema = mongoose.Schema(
             default: false
         },
         finalOrder: [{
-            idDish: {
+            dish: {
                 type: Schema.Types.ObjectId,
-                required: true
+                required: true,
+                ref: "Dish"
             },
             quantity: {
                 type: Number,
                 required: true
-            },
-            isAvailable: {
-                type: Boolean,
-                required: true,
-                default:false
             }
         }]
     },
@@ -57,6 +53,10 @@ const BillSchema = mongoose.Schema(
 BillSchema.post("save", async (doc) => {
     await doc.populate("employee", ["_id", "name"]).execPopulate();
     await doc.populate("tables", ["_id", "name", "isAvailable", "currentBill"]).execPopulate();
+    if (doc.finalOrder != undefined)
+            for (let i = 0; i < doc.finalOrder.length; i++) {
+                await doc.populate("finalOrder." + i + ".dish", ["name", "isAvailable"]).execPopulate();
+            }
 })
 
 BillSchema.post("find", async (docs) => {
@@ -67,6 +67,10 @@ BillSchema.post("find", async (docs) => {
                 await doc.populate("orders." + i + ".dishes." + j + ".dish.unit", ["name"], "DishUnit").execPopulate();
             }
         }
+        if (doc.finalOrder != undefined)
+            for (let i = 0; i < doc.finalOrder.length; i++) {
+                await doc.populate("finalOrder." + i + ".dish", ["name", "isAvailable"]).execPopulate();
+            }
     }
 })
 

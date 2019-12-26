@@ -111,6 +111,28 @@ async function createFinalOrder(req, res) {
     })
 }
 
+async function returnDish(req, res) {
+    const { idBill } = req.params;
+    const dish = req.body;
+
+    const bill = await billService.returnDish(idBill, dish);
+
+    res.status(201).send({
+        status: 1,
+        results: bill
+    })
+}
+
+async function caculateBill(req, res) {
+    const { idBill } = req.params;
+    const bill = await billService.calculateBill(idBill);
+
+    res.status(201).send({
+        status: 1,
+        results: bill
+    })
+}
+
 module.exports = {
     createBill,
     updateBill,
@@ -118,5 +140,7 @@ module.exports = {
     deleteBill,
     completeBill,
     addOrder,
-    createFinalOrder
+    createFinalOrder,
+    returnDish,
+    caculateBill
 }
