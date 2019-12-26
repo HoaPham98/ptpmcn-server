@@ -121,6 +121,16 @@ async function returnDish(req, res) {
     })
 }
 
+async function caculateBill(req, res) {
+    const { idBill } = req.params;
+    const bill = await billService.calculateBill(idBill);
+
+    res.status(201).send({
+        status: 1,
+        results: bill
+    })
+}
+
 module.exports = {
     createBill,
     updateBill,
@@ -129,5 +139,6 @@ module.exports = {
     completeBill,
     addOrder,
     createFinalOrder,
-    returnDish
+    returnDish,
+    caculateBill
 }

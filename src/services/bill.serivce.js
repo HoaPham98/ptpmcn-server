@@ -4,6 +4,7 @@ const errorCode = require("../errors/errorCode");
 const orderService = require("./order.service");
 const tableService = require("./table.service");
 const preparingDishService = require("../services/preparingDish.service");
+const Dish = require("../models/dish.model");
 const mongoose = require('mongoose')
 
 
@@ -147,12 +148,11 @@ async function createFinalOrder(idBill) {
     let finalOrder = [];
     bill.orders.forEach(order => {
         order.dishes.forEach(dish => {
-            let index = finalOrder.findIndex(item => item.idDish.toString() === dish.dish._id.toString());
+            let index = finalOrder.findIndex(item => item.dish.toString() === dish.dish._id.toString());
             if (index === -1) {
                 finalOrder.push({
-                    "idDish": dish.dish._id,
-                    "quantity": dish.quantity,
-                    "isAvailable": dish.dish.isAvailable
+                    "dish": dish.dish._id,
+                    "quantity": dish.quantity
                 });
             }
             else {
@@ -184,6 +184,31 @@ async function returnDish(idBill, dish) {
     return bill;
 }
 
+async function calculateBill(idBill) {
+    let bill = await Bill.findById(idBill);
+
+    if (!bill)
+        throw new CustomError(errorCode.NOT_FOUND, "Could not find any bills to return dish!");
+
+    const finalOrder = bill.finalOrder;
+    const idDishes = finalOrder.map(item => item.dish._id);
+
+    const dishes = await Dish.find({
+        "_id":{
+            $in: idDishes
+        }
+    });
+    
+    let totalPrice = 0;
+    finalOrder.forEach(item => {
+        let dishPrice = dishes.find(item2 => item.dish._id.toString() === item2._id.toString()).price;
+        totalPrice += dishPrice * item.quantity;
+    });
+    bill.totalPrice = totalPrice;
+    await bill.save();
+    return bill;
+}
+
 module.exports = {
     createBill,
     updateBill,
@@ -192,5 +217,6 @@ module.exports = {
     completeBill,
     addOrder,
     createFinalOrder,
-    returnDish
+    returnDish,
+    calculateBill
 }
