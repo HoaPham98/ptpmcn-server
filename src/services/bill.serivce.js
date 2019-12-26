@@ -68,11 +68,11 @@ async function deleteBill(idBill) {
 async function getBillById(idBill) {
     const bill = await Bill.find({ _id: idBill });
 
-    if (!bill) {
+    if (!bill || bill.length < 1) {
         throw new CustomError(errorCode.NOT_FOUND, "Could not find any bills to get!");
     }
 
-    return bill;
+    return bill[0];
 }
 
 async function completeBill(idBill) {
