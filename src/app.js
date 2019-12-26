@@ -19,6 +19,7 @@ app.use("/area", require("./routers/area.router"));
 app.use("/bill", require("./routers/bill.router"));
 app.use("/preparingDish", require("./routers/preparingDish.route"));
 app.use("/order", require("./routers/order.router"));
+app.use('/dish', require('./routers/dish.router'));
 
 // Error handler
 app.use(errorHandler);
