@@ -95,8 +95,8 @@ async function startPreparingDish(idPreparingDish) {
 async function finishPreparingDish(idPreparingDish) {
     let preparingDish = await PreparingDish.findById(idPreparingDish);
 
-    // if (preparingDish.status === "finished" || preparingDish.status === "pending")
-    //     throw new CustomError(errorCode.BAD_REQUEST, "Could not finish! This dish is " + preparingDish.status + "!");
+    if (preparingDish.status === "finished" || preparingDish.status === "pending")
+        throw new CustomError(errorCode.BAD_REQUEST, "Could not finish! This dish is " + preparingDish.status + "!");
     await preparingDish.populate("orders", "dishes").execPopulate();
     for (let i = 0; i < preparingDish.orders.length; i++) {
         preparingDish.orders[i].dishes.find(item => item.dish.toString() === preparingDish.dish.toString()).canFinish = true;
