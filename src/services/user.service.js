@@ -10,7 +10,7 @@ async function createUser(userInfo) {
     }
 
     const newUser = await User.create(userInfo);
-    const token = await user.generateAuthToken();
+    const token = await newUser.generateAuthToken();
 
     return { token, newUser };
 }

@@ -2,7 +2,6 @@ const router = require("express").Router();
 const auth = require("../middlewares/auth");
 const asyncMiddleware = require("../middlewares/asyncMiddleware");
 const role = require("../models/role.model");
-const dishService = require("../services/preparingDish.service");
 
 const {
     createBill,

@@ -20,6 +20,7 @@ app.use("/bill", require("./routers/bill.router"));
 app.use("/preparingDish", require("./routers/preparingDish.route"));
 app.use("/order", require("./routers/order.router"));
 app.use('/dish', require('./routers/dish.router'));
+app.use('/customer', require('./routers/customer.router'));
 
 app.use('/test', require('./routers/test.router'))
 
