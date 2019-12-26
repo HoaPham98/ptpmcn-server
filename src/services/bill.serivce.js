@@ -5,6 +5,7 @@ const orderService = require("./order.service");
 const tableService = require("./table.service");
 const preparingDishService = require("../services/preparingDish.service");
 const Dish = require("../models/dish.model");
+const Table = require('../models/table.model')
 const mongoose = require('mongoose')
 
 
@@ -76,29 +77,22 @@ async function getBillById(idBill) {
 }
 
 async function completeBill(idBill) {
-    let bills = await Bill.find({
-        "_id":idBill,
-        "status":"checkingOut"
-    });
+    const bills = await Bill.find({ _id: idBill });
 
     if (bills.length <= 0) {
         throw new CustomError(errorCode.NOT_FOUND, "Could not find any bills to get!");
     }
-
-    const bill = bills[0];
-
+    let bill = bills[0];
     const session = await mongoose.startSession()
     try {
-        session.startTransaction();
+        session.startTransaction()
         bill.status = "finished";
-        
-        for(let i = 0; i < bill.tables.length; i++){
-            console.log(bill);
-            bill.tables[i].currentBill = null;
-            await bill.tables[i].save();
-        }
+        // bill.tables.forEach(async (table) => {
+        //     table.currentBill = null
+        //     await table.save()
+        // })
         await bill.save()
-        
+
         await session.commitTransaction()
         session.endSession();
     } catch (err) {
@@ -148,9 +142,17 @@ async function createFinalOrder(idBill) {
         throw new CustomError(errorCode.NOT_FOUND, "Could not find any bills to get final order!");
 
     await bill.populate("orders", "dishes").execPopulate();
+
     for (let i = 0; i < bill.orders.length; i++) {
         for (let j = 0; j < bill.orders[i].dishes.length; j++)
             await bill.populate("orders." + i + ".dishes." + j + ".dish", ["name", "isAvailable"], "Dish").execPopulate();
+    }
+
+    if (bill.finalOrder != null && bill.finalOrder.length > 0) {
+        for (let i = 0; i < bill.finalOrder.length; i++) {
+            await bill.populate('finalOrder.' + i + ".dish", ["name", "isAvailable"], "Dish").execPopulate();
+        }
+        return bill
     }
 
     let finalOrder = [];
@@ -168,6 +170,7 @@ async function createFinalOrder(idBill) {
             }
         })
     });
+
     bill.finalOrder = finalOrder;
     await bill.save();
     bill.orders = undefined;
@@ -192,15 +195,11 @@ async function returnDish(idBill, dish) {
 }
 
 async function checkOut(idBill) {
-    let bill = await Bill.findOne({
-        "_id":idBill,
-        "status":"eating"
-    });
+    let bill = await Bill.findById(idBill);
 
     if (!bill)
         throw new CustomError(errorCode.NOT_FOUND, "Could not find any bills to return dish!");
 
-    bill.status = "checkingOut"
     const finalOrder = bill.finalOrder;
     const idDishes = finalOrder.map(item => item.dish._id);
 
@@ -215,28 +214,33 @@ async function checkOut(idBill) {
         let dishPrice = dishes.find(item2 => item.dish._id.toString() === item2._id.toString()).price;
         totalPrice += dishPrice * item.quantity;
     });
-    bill.totalPrice = totalPrice;
-    await bill.save();
+
+
+    const session = await mongoose.startSession()
+    try {
+        session.startTransaction();
+        bill.totalPrice = totalPrice;
+        bill.status = "pending";
+
+        bill.tables.forEach(async (table) => {
+            const _table = await Table.findById(table._id)
+            _table.isAvailable = true
+            _table.currentBill = null
+            await _table.save()
+        })
+        await bill.save()
+
+        await session.commitTransaction()
+        session.endSession();
+    } catch (err) {
+        throw new CustomError(errorCode.NOT_FOUND, err.message);
+    }
+
+    require('../controllers/io.controller').io().of('/cashier').emit('done', 'Có yêu cầu thanh toán mới')
+
     return bill;
 }
 
-// async function finishBill(idBill, idCustomer) {
-//     let bill = await Bill.findOne({
-//         "_id": idBill,
-//         "isFinished": false
-//     });
-
-//     if (bill.length <= 0) {
-//         throw new CustomError(errorCode.NOT_FOUND, "Could not find bill to finish!");
-//     }
-
-//     bill.customer = idCustomer;
-//     bill.isFinished = true;
-
-//     await bill.save();
-//     return bill;
-
-// }
 
 module.exports = {
     createBill,

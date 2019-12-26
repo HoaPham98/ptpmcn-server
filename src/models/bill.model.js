@@ -29,7 +29,7 @@ const BillSchema = mongoose.Schema(
             ref: 'Table'
         }],
         status: {
-            type: String, // eating, checkingOut, finished
+            type: String, // eating, pending, finished
             required: true,
             default: "eating"
         },

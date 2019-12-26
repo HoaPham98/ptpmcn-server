@@ -143,6 +143,5 @@ module.exports = {
     addOrder,
     createFinalOrder,
     returnDish,
-    checkOut,
-    finishBill
+    checkOut
 }

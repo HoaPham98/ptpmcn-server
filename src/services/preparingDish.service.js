@@ -130,6 +130,8 @@ async function finishPreparingDish(idPreparingDish) {
     }
     message += "đã xong!";
 
+    console.log(message)
+
     // TODO: THAY HELLO CON DÊ BẰNG MESSAGE CẦN HIỆN
     require('../controllers/io.controller').io().of('/waiter').emit('done', message)
     return preparingDish;
