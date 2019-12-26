@@ -17,6 +17,8 @@ async function startPreparingDish(req, res) {
 async function finishPreparingDish(req, res) {
     const { idDish } = req.params;
     const dish = await preparingDishService.finishPreparingDish(idDish);
+    // TODO: THAY HELLO CON DÊ BẰNG MESSAGE CẦN HIỆN
+    require('../controllers/io.controller').io().of('/waiter').emit('done', "Hello con dê")
 
     res.status(201).send({
         status: 1,
