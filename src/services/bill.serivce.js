@@ -174,11 +174,11 @@ async function returnDish(idBill, dish) {
         throw new CustomError(errorCode.NOT_FOUND, "Could not find any bills to return dish!");
 
 
-    let temp = bill.finalOrder.find(item => item.idDish.toString() === dish.idDish.toString()).quantity;
+    let temp = bill.finalOrder.find(item => item.dish.toString() === dish.idDish.toString()).quantity;
     temp -= dish.quantity;
     if (temp < 0)
         temp = 0
-    bill.finalOrder.find(item => item.idDish.toString() === dish.idDish.toString()).quantity = temp;
+    bill.finalOrder.find(item => item.dish.toString() === dish.idDish.toString()).quantity = temp;
     await bill.save();
 
     return bill;
@@ -213,6 +213,10 @@ async function checkOut(idBill) {
 
     
     return bill;
+}
+
+async function getTableAndDishWhenFinish(idBill, idDish, idOrder) {
+
 }
 
 module.exports = {
