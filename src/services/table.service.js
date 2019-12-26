@@ -14,17 +14,16 @@ async function createTable(infoTable) {
 }
 
 async function updateTable(idTable, infoTable) {
-    const keysUpdate = Object.keys(infoTable);
-    const keysAllowed = ["name", "isAvailable"];
+    // const keysUpdate = Object.keys(infoTable);
+    // const keysAllowed = ["name"];
 
-    const isValidUpdate = keysUpdate.every(key => {
-        keysAllowed.includes(key);
-    })
+    // const isValidUpdate = keysUpdate.every(key => {
+    //     keysAllowed.includes(key);
+    // })
 
-    if (!isValidUpdate)
-        throw new CustomError(errorCode.BAD_REQUEST, "Update keys are not valid!");
-
-    const updatedTable = await Table.findByIdAndUpdate(idTable, infoTable);
+    // if (!isValidUpdate)
+    //     throw new CustomError(errorCode.BAD_REQUEST, "Update keys are not valid!");
+    const updatedTable = await Table.findByIdAndUpdate(idTable, infoTable, { new: true });
     return updatedTable;
 }
 

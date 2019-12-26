@@ -26,7 +26,7 @@ async function addNewOrder(idBill, order) {
     }).populate("dish", "availableTime", "Dish");
 
     // danh sach id cac mon co the them vao ngay duoc
-    let idDishesCanBeInstanlyAdded = preparingDishes.filter(item => (item.status === "pending" || Date.now() - item.startAt < item.dish.availableTime)).map(item => item.dish._id);
+    let idDishesCanBeInstanlyAdded = preparingDishes.filter(item => (item.status === "pending" || item.status === "preparing" && (Date.now() - item.startAt < item.dish.availableTime))).map(item => item.dish._id);
 
     // danh sach cac mon co the them vao ngay duoc
     let listDishesCanBeInstanlyAdded = preparingDishes.filter(item => {

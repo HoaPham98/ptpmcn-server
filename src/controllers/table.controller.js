@@ -16,7 +16,7 @@ async function updateTable(req, res) {
     const infoTable = req.body;
     const { idTable } = req.params;
 
-    if(!validator.isMongoId(idArea)){
+    if (!validator.isMongoId(idTable)) {
         throw new CustomError(errorCode.BAD_REQUEST, "This idTable is not MongoDB ID!");
     }
 
@@ -30,7 +30,7 @@ async function updateTable(req, res) {
 
 async function deleteTable(req, res) {
     const { idTable } = req.params;
-    if(!validator.isMongoId(idTable))
+    if (!validator.isMongoId(idTable))
         throw new CustomError(errorCode.BAD_REQUEST, "This idTable is not MongoDB ID!");
     const deletedTable = await tableService.deleteTable(idTable);
 
@@ -43,9 +43,9 @@ async function deleteTable(req, res) {
 async function getTable(req, res) {
     const { idTable } = req.params;
 
-    if(!validator.isMongoId(idTable))
+    if (!validator.isMongoId(idTable))
         throw new CustomError(errorCode.BAD_REQUEST, "This idTable is not MongoDB ID!");
-        
+
     const table = await tableService.getTable(idTable);
 
     res.status(201).send({
