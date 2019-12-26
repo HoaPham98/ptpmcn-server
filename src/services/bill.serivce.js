@@ -167,6 +167,23 @@ async function createFinalOrder(idBill) {
     return bill;
 }
 
+async function returnDish(idBill, dish) {
+    let bill = await Bill.findById(idBill);
+
+    if (!bill)
+        throw new CustomError(errorCode.NOT_FOUND, "Could not find any bills to return dish!");
+
+
+    let temp = bill.finalOrder.find(item => item.idDish.toString() === dish.idDish.toString()).quantity;
+    temp -= dish.quantity;
+    if (temp < 0)
+        temp = 0
+    bill.finalOrder.find(item => item.idDish.toString() === dish.idDish.toString()).quantity = temp;
+    await bill.save();
+
+    return bill;
+}
+
 module.exports = {
     createBill,
     updateBill,
@@ -174,5 +191,6 @@ module.exports = {
     getBillById,
     completeBill,
     addOrder,
-    createFinalOrder
+    createFinalOrder,
+    returnDish
 }
