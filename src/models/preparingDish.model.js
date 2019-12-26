@@ -39,6 +39,11 @@ const PreparingDishSchema = mongoose.Schema(
     }
 )
 
+
+PreparingDishSchema.pre("find", function (next) {
+    this.populate("dish", ["name"]);
+    next();
+})
 const PreparingDish = mongoose.model("PreparingDish", PreparingDishSchema, "preparingDishes");
 
 module.exports = PreparingDish;
