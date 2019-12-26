@@ -184,7 +184,7 @@ async function returnDish(idBill, dish) {
     return bill;
 }
 
-async function calculateBill(idBill) {
+async function checkOut(idBill) {
     let bill = await Bill.findById(idBill);
 
     if (!bill)
@@ -206,6 +206,12 @@ async function calculateBill(idBill) {
     });
     bill.totalPrice = totalPrice;
     await bill.save();
+
+    //TODO: Noti thu ngan
+
+
+
+    
     return bill;
 }
 
@@ -218,5 +224,5 @@ module.exports = {
     addOrder,
     createFinalOrder,
     returnDish,
-    calculateBill
+    checkOut
 }

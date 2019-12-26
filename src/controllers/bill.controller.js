@@ -123,7 +123,7 @@ async function returnDish(req, res) {
     })
 }
 
-async function caculateBill(req, res) {
+async function checkOut(req, res) {
     const { idBill } = req.params;
     const bill = await billService.calculateBill(idBill);
 
@@ -142,5 +142,5 @@ module.exports = {
     addOrder,
     createFinalOrder,
     returnDish,
-    caculateBill
+    checkOut
 }
