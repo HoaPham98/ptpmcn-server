@@ -32,6 +32,21 @@ const DishSchema = mongoose.Schema(
     }
 )
 
+DishSchema.post("save", async (doc) => {
+    await doc.populate("unit", "name", "DishUnit");
+})
+
+DishSchema.post("find", async (docs) => {
+    for (let doc of docs) {
+        await doc.populate("unit", "name", "DishUnit");
+    }
+})
+
+
+DishSchema.post("findOne", async (doc) => {
+    await doc.populate("unit", "name", "DishUnit");
+})
+
 const Dish = mongoose.model("Dish", DishSchema, "dishes");
 
 module.exports = Dish;
