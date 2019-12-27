@@ -19,6 +19,7 @@ async function createDish(infoDish) {
         throw new CustomError(errorCode.BAD_REQUEST, "Keys in infoDish is not valid!");
 
     const dish = await Dish.create(infoDish);
+    await dish.populate("unit", "name").execPopulate();
 
     return dish;
 }
@@ -33,6 +34,7 @@ async function updateDish(idDish, infoDish) {
         throw new CustomError(errorCode.BAD_REQUEST, "Keys in infoDish is not valid!");
 
     let dish = await Dish.findByIdAndUpdate(idDish, infoDish, { new: true });
+    await dish.populate("unit", "name").execPopulate();
 
     return dish;
 }
@@ -44,6 +46,7 @@ async function deleteDish(idDish) {
 
 
     await Dish.findByIdAndDelete(idDish);
+    await dish.populate("unit", "name").execPopulate();
 
     return dish;
 }
@@ -53,6 +56,7 @@ async function getDish(idDish) {
     if (!dish)
         throw new CustomError(errorCode.NOT_FOUND, "Dish not found to delete!");
 
+    await dish.populate("unit", "name").execPopulate();
     return dish;
 }
 
